@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { background: #FAFAF7; color: #14213D; font-family: var(--font-cairo), system-ui, sans-serif; }
+:focus-visible { outline: 2px solid #0F766E; outline-offset: 2px; }
+.input { width: 100%; border: 1px solid #d6d9de; border-radius: 8px; padding: 0.55rem 0.75rem; background: #fff; }
+.input:focus { border-color: #0F766E; outline: none; box-shadow: 0 0 0 3px #E3F1EF; }
+.btn { border-radius: 8px; padding: 0.55rem 1rem; font-weight: 600; transition: background 0.15s; }
+.btn-primary { background: #0F766E; color: #fff; }
+.btn-primary:hover { background: #0b5c56; }
+.btn-ghost { border: 1px solid #d6d9de; background: #fff; }
+.btn-ghost:hover { background: #f0f2f4; }
+
+@page { size: A4; margin: 0; }
+@media print {
+  body * { visibility: hidden; }
+  #cv-print, #cv-print * { visibility: visible; }
+  #cv-print { position: absolute; inset: 0 auto auto 0; width: 210mm; box-shadow: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
