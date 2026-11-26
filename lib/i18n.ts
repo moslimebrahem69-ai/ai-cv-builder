@@ -16,6 +16,9 @@ export const T = {
     f3: "بياناتك عندك", f3d: "كل شيء بيتحفظ في متصفحك، ومفيش حساب مطلوب.",
     aboutTitle: "عن المطور", aboutText: "مسلم إبراهيم، مطوّر ومصمم ويب. بنيت الموقع ده كمشروع عملي بـ Next.js والذكاء الاصطناعي.",
     footer: "صُنع بواسطة مسلم إبراهيم",
+    match: "مطابقة وظيفة", jobPaste: "الصق إعلان الوظيفة هنا", matchBtn: "حلّل المطابقة", matchScore: "نسبة المطابقة",
+    missing: "كلمات ناقصة في سيرتك", suggestions: "اقتراحات", addMissing: "أضفها للمهارات",
+    translateTitle: "ترجمة السيرة", translateBtn: "ترجم السيرة للإنجليزية", ats1: "ATS بسيط", bold: "عريض",
   },
   en: {
     app: "AI CV Builder", start: "Build your CV", builder: "Builder", about: "About", home: "Home",
@@ -34,5 +37,8 @@ export const T = {
     f3: "Your data stays yours", f3d: "Everything is saved in your browser. No account needed.",
     aboutTitle: "About the developer", aboutText: "Moslim Ebrahim, web developer and designer. I built this as a hands-on Next.js and AI project.",
     footer: "Built by Moslim Ebrahim",
+    match: "Job match", jobPaste: "Paste the job description here", matchBtn: "Analyze match", matchScore: "Match score",
+    missing: "Keywords missing from your CV", suggestions: "Suggestions", addMissing: "Add to skills",
+    translateTitle: "Translate CV", translateBtn: "Translate CV to Arabic", ats1: "Plain ATS", bold: "Bold",
   },
 };

@@ -1,5 +1,5 @@
 import type { Lang } from "./types";
-export async function callAI(action: "enhance" | "skills" | "score", payload: unknown, lang: Lang) {
+export async function callAI(action: "enhance" | "skills" | "score" | "match" | "translate", payload: unknown, lang: Lang) {
   const res = await fetch("/api/ai", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action, payload, lang }),

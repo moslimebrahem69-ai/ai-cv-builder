@@ -4,7 +4,7 @@ import { useCV } from "@/lib/store";
 import { T } from "@/lib/i18n";
 import { callAI } from "@/lib/ai";
 
-type Tab = "personal" | "summary" | "experience" | "education" | "skills" | "ai";
+type Tab = "personal" | "summary" | "experience" | "education" | "skills" | "match" | "ai";
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -31,10 +31,12 @@ export default function Editor() {
   const [tab, setTab] = useState<Tab>("personal");
   const [busy, setBusy] = useState(false);
   const [score, setScore] = useState<any>(null);
+  const [job, setJob] = useState("");
+  const [matchRes, setMatchRes] = useState<any>(null);
 
-  const run = async (action: "enhance" | "skills" | "score", payload: unknown) => {
+  const run = async (action: "enhance" | "skills" | "score" | "match" | "translate", payload: unknown, target = lang) => {
     setBusy(true);
-    try { return await callAI(action, payload, lang); }
+    try { return await callAI(action, payload, target); }
     catch (e: any) { alert(e?.message || t.error); return null; }
     finally { setBusy(false); }
   };
@@ -45,7 +47,7 @@ export default function Editor() {
     if (r) apply(r);
   };
 
-  const tabs: [Tab, string][] = [["personal", t.personal], ["summary", t.summary], ["experience", t.experience], ["education", t.education], ["skills", t.skills], ["ai", t.ai]];
+  const tabs: [Tab, string][] = [["personal", t.personal], ["summary", t.summary], ["experience", t.experience], ["education", t.education], ["skills", t.skills], ["match", t.match], ["ai", t.ai]];
   const text = (k: "name" | "title" | "email" | "phone" | "address" | "linkedin", label: string) => (
     <Field label={label}><input className="input" value={cv[k]} onChange={(e) => setCV({ [k]: e.target.value })} /></Field>
   );
@@ -140,6 +142,31 @@ export default function Editor() {
           </>
         )}
 
+        {tab === "match" && (
+          <>
+            <textarea className="input min-h-48" placeholder={t.jobPaste} value={job} onChange={(e) => setJob(e.target.value)} />
+            <button className="btn btn-primary" disabled={busy} onClick={async () => {
+              if (job.trim().length < 30) return alert(t.fillFirst);
+              const { photo, ...rest } = cv;
+              const r = await run("match", { cv: rest, job });
+              if (r) setMatchRes(r);
+            }}>{t.matchBtn}</button>
+            {matchRes && (
+              <div className="space-y-4">
+                <div className="bg-teal-soft rounded-lg p-3 text-center"><div className="text-3xl font-extrabold text-teal">{String(matchRes.match)}%</div><div className="text-sm">{t.matchScore}</div></div>
+                <div>
+                  <h4 className="font-bold">{t.missing}</h4>
+                  <div className="flex flex-wrap gap-2 mt-2">{(matchRes.missingKeywords ?? []).map((k: string) => <span key={k} className="px-2 py-1 rounded bg-slate-100 text-sm">{k}</span>)}</div>
+                  {(matchRes.missingKeywords ?? []).length > 0 && (
+                    <button className="btn btn-ghost text-sm mt-3" onClick={() => setCV({ skills: Array.from(new Set([...cv.skills, ...matchRes.missingKeywords.map(String)])) })}>{t.addMissing}</button>
+                  )}
+                </div>
+                <div><h4 className="font-bold">{t.suggestions}</h4><ul className="list-disc ms-5 text-sm">{(matchRes.suggestions ?? []).map((s: string, i: number) => <li key={i}>{s}</li>)}</ul></div>
+              </div>
+            )}
+          </>
+        )}
+
         {tab === "ai" && (
           <>
             <button className="btn btn-primary" disabled={busy} onClick={async () => { const { photo, ...rest } = cv; const r = await run("score", { cv: rest }); if (r) setScore(r); }}>{t.scoreBtn}</button>
@@ -154,6 +181,22 @@ export default function Editor() {
                 <div><h4 className="font-bold">{t.improve}</h4><ul className="list-disc ms-5 text-sm">{(score.improvements ?? []).map((s: string, i: number) => <li key={i}>{s}</li>)}</ul></div>
               </div>
             )}
+            <div className="border-t border-slate-200 pt-4">
+              <h4 className="font-bold mb-2">{t.translateTitle}</h4>
+              <button className="btn btn-ghost" disabled={busy} onClick={async () => {
+                const other = lang === "ar" ? "en" : "ar";
+                const { photo, ...rest } = cv;
+                const r = await run("translate", { cv: rest }, other);
+                if (!r || !Array.isArray(r.experience) || !Array.isArray(r.education) || !Array.isArray(r.skills)) return r && alert(t.error);
+                setCV({
+                  name: String(r.name ?? cv.name), title: String(r.title ?? ""), address: String(r.address ?? cv.address), summary: String(r.summary ?? ""),
+                  experience: cv.experience.map((e, i) => ({ ...e, ...(r.experience[i] ?? {}), id: e.id })),
+                  education: cv.education.map((e, i) => ({ ...e, ...(r.education[i] ?? {}), id: e.id })),
+                  skills: r.skills.map(String),
+                });
+                useCV.getState().setLang(other);
+              }}>{t.translateBtn}</button>
+            </div>
           </>
         )}
       </div>

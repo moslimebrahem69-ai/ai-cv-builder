@@ -15,6 +15,7 @@ export default function Home() {
       <header className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
         <span className="font-extrabold text-lg">{t.app}</span>
         <nav className="flex items-center gap-4 text-sm font-semibold">
+          <Link href="/guides">المقالات</Link>
           <Link href="/about">{t.about}</Link>
           <button className="btn btn-ghost" onClick={() => setLang(lang === "ar" ? "en" : "ar")}>{lang === "ar" ? "English" : "عربي"}</button>
         </nav>

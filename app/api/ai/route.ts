@@ -31,6 +31,15 @@ function buildPrompt(action: string, payload: any, lang: string) {
     const cv = JSON.stringify(payload?.cv ?? {}).slice(0, 8000);
     return { json: true, prompt: `Evaluate this CV. Return STRICTLY JSON: {"overall": number 0-100, "ats": number 0-100, "professionalism": number 0-100, "strengths": string[3], "improvements": string[3]}. Write the strings in ${L}.\n\nCV:\n${cv}` };
   }
+  if (action === "match") {
+    const cv = JSON.stringify(payload?.cv ?? {}).slice(0, 8000);
+    const job = String(payload?.job ?? "").slice(0, 6000);
+    return { json: true, prompt: `Compare this CV with the job description. Return STRICTLY JSON: {"match": number 0-100, "missingKeywords": string[] (max 10, only keywords from the job description that are absent from the CV), "suggestions": string[3]}. Write the strings in ${L}.\n\nJOB:\n${job}\n\nCV:\n${cv}` };
+  }
+  if (action === "translate") {
+    const cv = JSON.stringify(payload?.cv ?? {}).slice(0, 8000);
+    return { json: true, prompt: `Translate every human-readable text value in this CV JSON into ${L}. Keep exactly the same JSON structure, keys and id values. Do not change emails, phone numbers or URLs. Return STRICTLY the JSON only.\n\n${cv}` };
+  }
   return null;
 }
 

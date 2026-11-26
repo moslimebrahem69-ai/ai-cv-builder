@@ -5,4 +5,4 @@ export type CV = {
   summary: string; experience: Exp[]; education: Edu[]; skills: string[];
 };
 export type Lang = "ar" | "en";
-export type TemplateId = "classic" | "modern";
+export type TemplateId = "classic" | "modern" | "ats" | "bold";

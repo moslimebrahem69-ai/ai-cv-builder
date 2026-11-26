@@ -5,6 +5,7 @@ import "./globals.css";
 const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo", display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: "صانع السيرة الذاتية AI | AI CV Builder",
   description: "أنشئ سيرة ذاتية احترافية بالعربي والإنجليزي مع تحسين الصياغة وتقييم ATS بالذكاء الاصطناعي، وحمّلها PDF مجاناً.",
   openGraph: { title: "صانع السيرة الذاتية AI", description: "سيرة ذاتية احترافية بالذكاء الاصطناعي، مجاناً.", type: "website" },

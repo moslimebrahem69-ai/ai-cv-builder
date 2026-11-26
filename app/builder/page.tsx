@@ -6,6 +6,7 @@ import { T } from "@/lib/i18n";
 import Editor from "@/components/Editor";
 import Preview from "@/components/Preview";
 import Footer from "@/components/Footer";
+import type { TemplateId } from "@/lib/types";
 
 const COLORS = ["#0F766E", "#14213D", "#9F1239", "#B45309", "#4338CA"];
 
@@ -22,8 +23,8 @@ export default function Builder() {
       <header className="max-w-[1400px] mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Link href="/" className="font-extrabold text-lg">{t.app}</Link>
         <div className="flex flex-wrap items-center gap-3">
-          <select className="input !w-auto" value={template} onChange={(e) => setTemplate(e.target.value as "classic" | "modern")} aria-label={t.template}>
-            <option value="modern">{t.modern}</option><option value="classic">{t.classic}</option>
+          <select className="input !w-auto" value={template} onChange={(e) => setTemplate(e.target.value as TemplateId)} aria-label={t.template}>
+            <option value="modern">{t.modern}</option><option value="classic">{t.classic}</option><option value="bold">{t.bold}</option><option value="ats">{t.ats1}</option>
           </select>
           <div className="flex gap-1.5" role="group" aria-label={t.color}>
             {COLORS.map((c) => (

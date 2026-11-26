@@ -36,26 +36,52 @@ function Education({ cv }: { cv: CV }) {
 
 export default function Preview({ cv, lang, template, color }: { cv: CV; lang: Lang; template: TemplateId; color: string }) {
   const t = L[lang];
+  const accent = template === "ats" ? "#111827" : color;
   const contact = [cv.email, cv.phone, cv.address, cv.linkedin].filter(Boolean);
   const H = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="text-base font-extrabold pb-1 mb-2 border-b-2" style={{ borderColor: color, color }}>{children}</h3>
+    <h3 className="text-base font-extrabold pb-1 mb-2 border-b-2" style={{ borderColor: accent, color: accent }}>{children}</h3>
   );
 
-  if (template === "classic") {
+  if (template === "classic" || template === "ats") {
     return (
       <div id="cv-print" dir={lang === "ar" ? "rtl" : "ltr"} className="bg-white shadow-xl w-[210mm] min-h-[297mm] p-[16mm] text-slate-900">
-        <header className="flex items-center gap-5 pb-4 mb-5 border-b-4" style={{ borderColor: color }}>
-          {cv.photo && <img src={cv.photo} alt="" className="w-24 h-24 rounded-full object-cover" />}
+        <header className="flex items-center gap-5 pb-4 mb-5 border-b-4" style={{ borderColor: accent }}>
+          {cv.photo && template !== "ats" && <img src={cv.photo} alt="" className="w-24 h-24 rounded-full object-cover" />}
           <div>
             <h1 className="text-3xl font-extrabold">{cv.name}</h1>
-            <p className="text-lg font-semibold" style={{ color }}>{cv.title}</p>
+            <p className="text-lg font-semibold" style={{ color: accent }}>{cv.title}</p>
             <p className="text-sm text-slate-600 mt-1">{contact.join("  |  ")}</p>
           </div>
         </header>
         {cv.summary && <section className="mb-5"><H>{t.summary}</H><p className="text-sm leading-relaxed">{cv.summary}</p></section>}
-        {cv.experience.length > 0 && <section className="mb-5"><H>{t.exp}</H><Experience cv={cv} color={color} /></section>}
+        {cv.experience.length > 0 && <section className="mb-5"><H>{t.exp}</H><Experience cv={cv} color={accent} /></section>}
         {cv.education.length > 0 && <section className="mb-5"><H>{t.edu}</H><Education cv={cv} /></section>}
         {cv.skills.length > 0 && <section><H>{t.skills}</H><p className="text-sm">{cv.skills.join(" • ")}</p></section>}
+      </div>
+    );
+  }
+
+  if (template === "bold") {
+    return (
+      <div id="cv-print" dir={lang === "ar" ? "rtl" : "ltr"} className="bg-white shadow-xl w-[210mm] min-h-[297mm] text-slate-900">
+        <header className="px-[14mm] py-[11mm] text-white flex items-center gap-5" style={{ background: color }}>
+          {cv.photo && <img src={cv.photo} alt="" className="w-28 h-28 rounded-lg object-cover border-4 border-white/70" />}
+          <div>
+            <h1 className="text-4xl font-extrabold">{cv.name}</h1>
+            <p className="text-xl font-semibold opacity-90">{cv.title}</p>
+            <p className="text-sm mt-2 opacity-90">{contact.join("  |  ")}</p>
+          </div>
+        </header>
+        <div className="grid grid-cols-[1fr_58mm] gap-8 p-[13mm]">
+          <div>
+            {cv.summary && <section className="mb-5"><H>{t.summary}</H><p className="text-sm leading-relaxed">{cv.summary}</p></section>}
+            {cv.experience.length > 0 && <section><H>{t.exp}</H><Experience cv={cv} color={color} /></section>}
+          </div>
+          <div>
+            {cv.education.length > 0 && <section className="mb-5"><H>{t.edu}</H><Education cv={cv} /></section>}
+            {cv.skills.length > 0 && <section><H>{t.skills}</H><div className="flex flex-wrap gap-1.5">{cv.skills.map((s) => <span key={s} className="text-xs px-2 py-1 rounded text-white" style={{ background: color }}>{s}</span>)}</div></section>}
+          </div>
+        </div>
       </div>
     );
   }
