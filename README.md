@@ -1,6 +1,6 @@
 # صانع السيرة الذاتية AI — AI CV Builder
 
-موقع لإنشاء سيرة ذاتية احترافية (عربي / English) مع تحسين الصياغة واقتراح المهارات وتقييم ATS بالذكاء الاصطناعي، وتحميلها PDF..
+موقع لإنشاء سيرة ذاتية احترافية (عربي / English) مع تحسين الصياغة واقتراح المهارات وتقييم ATS بالذكاء الاصطناعي، وتحميلها PDF.
 
 **المطور:** مسلم إبراهيم — [LinkedIn](https://www.linkedin.com/in/moslim-ebrahim-0ba71b2b9/) · [Facebook](https://www.facebook.com/share/1F51FLGJFY/) · [GitHub](https://github.com/moslimebrahem69-ai/-)
 

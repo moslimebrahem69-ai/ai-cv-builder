@@ -56,22 +56,34 @@ export async function POST(req: NextRequest) {
   const built = buildPrompt(body?.action, body?.payload, body?.lang);
   if (!built) return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const models = Array.from(new Set([
+    process.env.GEMINI_MODEL || "gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite",
+  ]));
   const payload: any = { contents: [{ parts: [{ text: built.prompt }] }] };
   if (built.json) payload.generationConfig = { responseMimeType: "application/json" };
 
-  try {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify(payload),
-    });
-    if (!r.ok) return NextResponse.json({ error: `AI provider error (${r.status})` }, { status: 502 });
-    const data = await r.json();
-    const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-    if (!text) return NextResponse.json({ error: "Empty AI response" }, { status: 502 });
-    return NextResponse.json({ result: built.json ? JSON.parse(text) : text.trim() });
-  } catch {
-    return NextResponse.json({ error: "AI request failed" }, { status: 502 });
+  let lastStatus = 0;
+  outer: for (let m = 0; m < models.length; m++) {
+    for (let attempt = 0; attempt < (m === 0 ? 2 : 1); attempt++) {
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${models[m]}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+          body: JSON.stringify(payload),
+        });
+        if (r.ok) {
+          const data = await r.json();
+          const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+          if (!text) return NextResponse.json({ error: "Empty AI response" }, { status: 502 });
+          return NextResponse.json({ result: built.json ? JSON.parse(text) : text.trim() });
+        }
+        lastStatus = r.status;
+        console.error("Gemini error", models[m], r.status, (await r.text()).slice(0, 300));
+        if (r.status === 401 || r.status === 403) break outer;
+        if (r.status !== 429 && r.status < 500) break;
+      } catch (e) { console.error("Gemini fetch failed", models[m], e); }
+      await new Promise((res) => setTimeout(res, 700));
+    }
   }
+  return NextResponse.json({ error: `AI provider error (${lastStatus || "network"})` }, { status: 502 });
 }
